@@ -1,42 +1,58 @@
-/* LIVE CLOCK (Sync with Device Time) */
+/* ================= CLOCK ================= */
 function updateClock() {
     const now = new Date();
-    let hours = now.getHours();
-    let minutes = now.getMinutes();
-    let seconds = now.getSeconds();
 
-    hours = hours < 10 ? "0" + hours : hours;
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    seconds = seconds < 10 ? "0" + seconds : seconds;
+    let h = String(now.getHours()).padStart(2, "0");
+    let m = String(now.getMinutes()).padStart(2, "0");
+    let s = String(now.getSeconds()).padStart(2, "0");
 
-    document.getElementById("clock").innerText =
-        `${hours}:${minutes}:${seconds}`;
+    document.getElementById("clock").innerText = `${h}:${m}:${s}`;
 }
-
 setInterval(updateClock, 1000);
 updateClock();
 
-/* TODO APP */
+/* ================= TODO APP ================= */
 function addTask() {
-    const taskInput = document.getElementById("taskInput");
-    const taskText = taskInput.value.trim();
+    const input = document.getElementById("taskInput");
+    const text = input.value.trim();
 
-    if (taskText === "") return;
+    if (text === "") return;
 
     const li = document.createElement("li");
+    li.classList.add("task");
 
     const span = document.createElement("span");
-    span.innerText = taskText;
+    span.innerText = text;
     span.onclick = () => span.classList.toggle("done");
 
+    /* EDIT BUTTON */
+    const editBtn = document.createElement("button");
+    editBtn.innerText = "✏️";
+    editBtn.className = "edit-btn";
+
+    editBtn.onclick = () => {
+        const newText = prompt("Edit your task:", span.innerText);
+        if (newText !== null && newText.trim() !== "") {
+            span.innerText = newText;
+        }
+    };
+
+    /* DELETE BUTTON */
     const delBtn = document.createElement("button");
     delBtn.innerText = "❌";
     delBtn.className = "delete-btn";
-    delBtn.onclick = () => li.remove();
 
-    li.appendChild(span);
-    li.appendChild(delBtn);
+    delBtn.onclick = () => {
+        li.classList.add("fade-out");
+        setTimeout(() => li.remove(), 300);
+    };
 
+    const btnBox = document.createElement("div");
+    btnBox.className = "btn-box";
+    btnBox.append(editBtn, delBtn);
+
+    li.append(span, btnBox);
     document.getElementById("taskList").appendChild(li);
-    taskInput.value = "";
+
+    input.value = "";
 }
